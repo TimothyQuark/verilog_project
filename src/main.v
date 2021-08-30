@@ -98,12 +98,16 @@ module main(
         );
         
      // VGA Modules and components
-          
-     clk_wiz_0 clock // This is the pixel clock, which runs at 106.47 MHz.
+     wire slow_clk_out;
+     clk_wiz_0 clock // 
      (
-     .clk_out1(pix_clk),     // Connect the pix_clk wire to the output of the Clock Wizard module
+     .clk_out1(pix_clk),     // This is the pixel clock, which runs at 106.47 MHz.
+     .slow_clk(slow_clk_out), // This is the VGA clock, which runs at 7.86432 MHz
      .clk_in1(clk)       // Connect the on board clock to the input of the Clock Wizard module
-     );
+     );              
+
+    reg [20:0] slow_clk_cnt = 1'b0;
+    wire rfresh_60Hz_clk; // This is the 60 Hz clock.
      
      wire [3:0] r_in, b_in, g_in; // Connect to these wires to determine the things to be displayed
      
@@ -149,19 +153,7 @@ module main(
             .game_win_out(game_win_wire)
             );
             
-    // Logic that gives the slow clock, 60 Hz
-    wire slow_clk_out;
-    slow_clk clk_60Hz // Note this clock is not actually 60 Hz, it it 7.86432 MHz
-    (
-    // Clock out ports
-    .clk_out1(slow_clk_out),     // output clk_out1
-    // Clock in ports
-    .clk_in1(clk)
-    );      // input clk_in1
-              
-
-    reg [20:0] slow_clk_cnt = 1'b0;
-    wire rfresh_60Hz_clk; // This is the 60 Hz clock.
+    
     
     // Logic for getting the 60 Hz clock from the slow clock
     always @(posedge slow_clk_out)
